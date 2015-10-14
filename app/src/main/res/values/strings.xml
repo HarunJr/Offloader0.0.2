@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Collection Manager</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_detail">Detail</string>
+    <string name="action_add_vehicle">Add Vehicle</string>
+    <string name="title_activity_add_vehicle">Add Vehicle</string>
+    <string name="vehicle_reg_hint">KAZ 170G</string>
+    <string name="constructor_call">Constructor Called</string>
+    <string name="on_create_call">onCreate Called</string>
+    <string name="on_upgrade_call">onUpgrade Called</string>
+    <string name="create_vehicle_button_label">Create Vehicle</string>
+    <string name="action_refresh">Refresh</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="expense_hint">-100</string>
+    <string name="submit_expense_button_label">Submit Expense</string>
+    <string name="action_input_expense">Expense</string>
+    <string name="action_input_collection">Collection</string>
+    <string name="collection_hint">2800</string>
+    <string name="submit_collection_button_label">Submit Collection</string>
+    <string name="title_activity_trsnsactions">Trsnsactions</string>
+    <string name="title_activity_transactions">Transactions</string>
+</resources>
