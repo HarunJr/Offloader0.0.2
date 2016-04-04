@@ -1,0 +1,26 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.AddVehicleFragment">
+
+    <include
+        android:id="@+id/add_Vehicle_tool_bar"
+        layout="@layout/tool_bar" />
+
+    <EditText
+        android:id="@+id/vehicle_input"
+        android:layout_below="@+id/add_Vehicle_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/vehicle_reg_hint"
+        android:imeOptions="actionDone"/>
+
+    <Button
+        android:layout_below="@+id/vehicle_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_vehicle_button_label"
+        android:id="@+id/create_vehicle_button"/>
+
+</RelativeLayout>
