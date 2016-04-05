@@ -15,8 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.harun.offloader002.Activities.MainActivity;
+import com.harun.offloader002.activities.MainActivity;
 import com.harun.offloader002.Constants;
+import com.harun.offloader002.PostToServerTask;
 import com.harun.offloader002.R;
 
 public class AddVehicleFragment extends Fragment {
@@ -81,18 +82,15 @@ public class AddVehicleFragment extends Fragment {
         mCreateVehicleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String method = "post";
                 String vehicleRegistration = mVehicleInput.getText().toString();
-//                String dateTime = dataSource.getDateTime();
-//
-//                long id = dataSource.insertVehicle(vehicleRegistration, dateTime);
-//
-//                if(id < 0){
-//                    Toast.makeText(getActivity(), "Unsuccessful", Toast.LENGTH_LONG).show();
-//                }else{
-//                    Toast.makeText(getActivity(), vehicleRegistration+"||"+ dateTime, Toast.LENGTH_LONG).show();
-//                    startActivity(new Intent(getActivity(), MainActivity.class));
-//                }
+                String dateTime = String.valueOf(System.currentTimeMillis());
+                Log.w(LOG_TAG, "create button clicked "+vehicleRegistration +": "+dateTime);
 
+                PostToServerTask postToServerTask = new PostToServerTask(getContext());
+                postToServerTask.execute(method, vehicleRegistration, dateTime);
+
+                startActivity(new Intent(getContext(), MainActivity.class));
             }
         });
 
