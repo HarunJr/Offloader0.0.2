@@ -1,4 +1,4 @@
-package com.harun.offloader002.Fragments;
+package com.harun.offloader002.fragments;
 
 import android.content.Context;
 import android.net.Uri;

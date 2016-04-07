@@ -1,4 +1,4 @@
-package com.harun.offloader002.Data;
+package com.harun.offloader002.data;
 
 
 import android.content.ContentResolver;
@@ -65,7 +65,7 @@ public class VehicleContract {
     }
 
 
-    public static final class VehicleEntry implements BaseColumns {
+    public static final class VehicleEntry {
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_VEHICLE).build();
 
@@ -74,10 +74,11 @@ public class VehicleContract {
 
         public static final String TABLE_NAME = "vehicle";
 
+        public static final String COLUMN_VEHICLE_ID = "_id";
         public static final String COLUMN_VEHICLE_REGISTRATION = "vehicleRegistration";
         public static final String COLUMN_VEHICLE_REGISTRATION_DATE = "registrationDate";
         public static final String COLUMN_VEHICLE_AMOUNT = "vehicleAmount";
-        public static final String COLUMN_LAST_TRANSACTION_DATE_TIME = "transaction_date_time";
+        public static final String COLUMN_LAST_TRANSACTION_DATE_TIME = "last_transaction_date_time";
 
         public static Uri buildVehicleUri(long id)
         {
@@ -119,6 +120,7 @@ public class VehicleContract {
 
         public static final String TABLE_NAME = "transactions";
 
+        public static final String COLUMN_TRANSACTION_ID = "_id";
         public static final String COLUMN_VEHICLE_KEY = "vehicle_id";
         public static final String COLUMN_AMOUNT = "amount";
         public static final String COLUMN_TYPE = "type";

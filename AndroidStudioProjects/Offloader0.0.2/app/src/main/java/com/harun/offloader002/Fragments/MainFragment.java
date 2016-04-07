@@ -1,10 +1,16 @@
-package com.harun.offloader002.Fragments;
+package com.harun.offloader002.fragments;
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,10 +21,46 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.harun.offloader002.Constants;
+import com.harun.offloader002.FetchVehicleTask;
 import com.harun.offloader002.R;
+import com.harun.offloader002.VehiclesAdapter;
+import com.harun.offloader002.data.VehicleContract;
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = MainFragment.class.getSimpleName();
+    private final int VEHICLE_LOADER = 0;
+
+    private VehiclesAdapter mVehiclesAdapter;
+    private FetchVehicleTask mFetchVehicleTask;
+
+    private RecyclerView mRecyclerView;
+    private int mPosition = RecyclerView.NO_POSITION;
+    private static final String SELECTED_KEY = "selected_position";
+
+    private static final String[] VEHICLE_COLUMN = {
+            // In this case the id needs to be fully qualified with a table name, since
+            // the content provider joins the location & weather tables in the background
+            // (both have an _id column)
+            // On the one hand, that's annoying.  On the other, you can search the weather table
+            // using the location set by the user, which is only in the Location table.
+            // So the convenience is worth it.
+            VehicleContract.VehicleEntry.TABLE_NAME + "." + VehicleContract.VehicleEntry.COLUMN_VEHICLE_ID,
+            VehicleContract.VehicleEntry.COLUMN_VEHICLE_REGISTRATION,
+            VehicleContract.VehicleEntry.COLUMN_VEHICLE_REGISTRATION_DATE,
+            VehicleContract.VehicleEntry.COLUMN_VEHICLE_AMOUNT,
+            VehicleContract.VehicleEntry.COLUMN_LAST_TRANSACTION_DATE_TIME,
+//            TransactionEntry.COLUMN_TYPE
+    };
+
+    // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these
+    // must change.
+    public static final int COL_VEHICLE_ID = 0;
+    public static final int COL_VEHICLE_REGISTRATION = 1;
+    public static final int COL_REG_DATE_TIME = 2;
+    public static final int COL_VEHICLE_AMOUNT = 3;
+    public static final int COL_LAST_TRANSACTION_DATE_TIME = 4;
+//    static final int COL_TYPE = 5;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -62,28 +104,31 @@ public class MainFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         Constants.toolbar = (Toolbar) rootView.findViewById(R.id.main_tool_bar);
 
-        return  rootView;
+        mVehiclesAdapter = new VehiclesAdapter(getActivity());
+
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvVehicles);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setAdapter(mVehiclesAdapter);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)){
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+        }
+
+        return rootView;
     }
 
     @Override
-    public void onActivityCreated( Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
+        getLoaderManager().initLoader(VEHICLE_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
 
         AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
         appCompatActivity.setSupportActionBar(Constants.toolbar);
 
-        assert appCompatActivity.getSupportActionBar()!=null;
+        assert appCompatActivity.getSupportActionBar() != null;
         appCompatActivity.getSupportActionBar().setTitle("Vehicles");
 
-
         Log.w(LOG_TAG, "Toolbar has been added");
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -105,14 +150,63 @@ public class MainFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void addVehicle(){
+    private void addVehicle() {
         AddVehicleFragment addVehicleFragment = new AddVehicleFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_container, addVehicleFragment);
         fragmentTransaction.commit();
     }
 
-//    @Override
+    private void updateVehicles() {
+
+        FetchVehicleTask vehicleTask = new FetchVehicleTask(getContext());
+        vehicleTask.execute();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateVehicles();
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.w(LOG_TAG, "onCreateLoader: ");
+        String sortOrder = VehicleContract.VehicleEntry.COLUMN_LAST_TRANSACTION_DATE_TIME + "DESC";
+
+        return new CursorLoader(
+                getActivity(),
+                VehicleContract.VehicleEntry.CONTENT_URI,
+                VEHICLE_COLUMN,
+                null,
+                null,
+                null
+        );
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.w(LOG_TAG, "onLoadFinished: "+data.getCount());
+
+        mVehiclesAdapter.swapCursor(data);
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        Log.w(LOG_TAG, "onLoaderReset: ");
+        mVehiclesAdapter.swapCursor(null);
+    }
+
+    //    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
 //        if (context instanceof OnFragmentInteractionListener) {

@@ -1,10 +1,10 @@
-package com.harun.offloader002.Activities;
+package com.harun.offloader002.activities;
 
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.harun.offloader002.Fragments.DetailFragment;
+import com.harun.offloader002.fragments.DetailFragment;
 import com.harun.offloader002.R;
 
 public class Details extends AppCompatActivity {

@@ -65,6 +65,7 @@ public class PostToServerTask extends AsyncTask<String, Void, String> {
 
                 InputStream IS = httpURLConnection.getInputStream();
                 IS.close();
+                httpURLConnection.disconnect();
 
                 return "Post Vehicle success";
             } catch (IOException e) {

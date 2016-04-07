@@ -1,4 +1,4 @@
-package com.harun.offloader002.Data;
+package com.harun.offloader002.data;
 
 import android.content.Context;
 import android.database.SQLException;
@@ -8,34 +8,36 @@ import android.widget.Toast;
 
 import com.harun.offloader002.R;
 
-import static com.harun.offloader002.Data.VehicleContract.TransactionEntry;
-import static com.harun.offloader002.Data.VehicleContract.VehicleEntry;
+import static com.harun.offloader002.data.VehicleContract.TransactionEntry;
+import static com.harun.offloader002.data.VehicleContract.VehicleEntry;
 
 
 public class VehicleDbHelper extends SQLiteOpenHelper {
     private Context mContext;
 
-    public static final String DATABASE_NAME = "transaction_manager.db";
-    private static final int DATABASE_VERSION = 0;
+    public static final String DATABASE_NAME = "Offloader002_DataBase.db";
+    private static final int DATABASE_VERSION = 1;
 
     final String SQL_CREATE_VEHICLE_TABLE = "CREATE TABLE "
             + VehicleEntry.TABLE_NAME + " ("
-            + VehicleEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + VehicleEntry.COLUMN_VEHICLE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + VehicleEntry.COLUMN_VEHICLE_REGISTRATION + " TEXT NOT NULL, "
             + VehicleEntry.COLUMN_VEHICLE_AMOUNT + " REAL NOT NULL, "
             + VehicleEntry.COLUMN_VEHICLE_REGISTRATION_DATE + " INTEGER NOT NULL, "
-            + VehicleEntry.COLUMN_LAST_TRANSACTION_DATE_TIME + " INTEGER NOT NULL);";
+            + VehicleEntry.COLUMN_LAST_TRANSACTION_DATE_TIME + " INTEGER NOT NULL, "
+
+            + "UNIQUE (" + VehicleEntry.COLUMN_VEHICLE_ID + ") ON CONFLICT REPLACE );";
 
     final String SQL_CREATE_TRANSACTION_TABLE = "CREATE TABLE "
             + TransactionEntry.TABLE_NAME + " ("
-            + TransactionEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + TransactionEntry.COLUMN_TRANSACTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TransactionEntry.COLUMN_VEHICLE_KEY + " INTEGER NOT NULL, "
             + TransactionEntry.COLUMN_AMOUNT + " REAL NOT NULL, "
             + TransactionEntry.COLUMN_TYPE + " INTEGER NOT NULL, "
             + TransactionEntry.COLUMN_DATE_TIME + " INTEGER NOT NULL, "
             + TransactionEntry.COLUMN_DESCRIPTION + " VARCHAR(255), "
             + "FOREIGN KEY (" + TransactionEntry.COLUMN_VEHICLE_KEY + ") REFERENCES "
-            + VehicleEntry.TABLE_NAME + "(" + VehicleEntry._ID +
+            + VehicleEntry.TABLE_NAME + "(" + VehicleEntry.COLUMN_VEHICLE_ID +
             ") " + ");";
 
     final String SQL_DROP_VEHICLE_TABLE = "DROP TABLE IF EXISTS " + VehicleEntry.TABLE_NAME;
@@ -54,7 +56,7 @@ public class VehicleDbHelper extends SQLiteOpenHelper {
         try {
             sqLiteDatabase.execSQL(SQL_CREATE_VEHICLE_TABLE);
             sqLiteDatabase.execSQL(SQL_CREATE_TRANSACTION_TABLE);
-            Toast.makeText(mContext, mContext.getString(R.string.on_create_call), Toast.LENGTH_LONG).show();
+//            Toast.makeText(mContext, mContext.getString(R.string.on_create_call), Toast.LENGTH_LONG).show();
 
         } catch (SQLException e) {
             Toast.makeText(mContext, "" + e, Toast.LENGTH_LONG).show();
