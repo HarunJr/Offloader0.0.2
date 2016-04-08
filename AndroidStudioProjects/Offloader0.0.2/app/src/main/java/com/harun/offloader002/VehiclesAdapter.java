@@ -19,13 +19,18 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.Offloa
 
     private Cursor mCursor;
     final private Context mContext;
+    final private VehiclesAdapterOnClickHandler mClickHandler;
+    final private View mEmptyView;
+    String vehicleReg;
 
-    public VehiclesAdapter(Context context) {
+    public VehiclesAdapter(Context context, VehiclesAdapterOnClickHandler clickHandler, View emptyView) {
         this.mContext = context;
+        this.mClickHandler = clickHandler;
+        this.mEmptyView = emptyView;
         Log.w(LOG_TAG, "VehiclesAdapter: ");
     }
 
-    public class OffloaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public  class OffloaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView registrationTextView;
         public TextView amountView;
         public TextView dateTimeView;
@@ -43,10 +48,21 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.Offloa
 
         @Override
         public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int vehicleId = mCursor.getInt(MainFragment.COL_VEHICLE_ID);
+            Log.w(LOG_TAG, "onClick "+vehicleId+", "+vehicleReg);
+
+            mClickHandler.onClick(vehicleId, vehicleReg, this);
+            Log.w(LOG_TAG, "onClick "+vehicleId+", "+vehicleReg);
 
         }
-
     }
+
+    public interface VehiclesAdapterOnClickHandler{
+        void onClick(int vehicleId, String vehicleReg, OffloaderViewHolder vh);
+    }
+
 
     @Override
     public OffloaderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -59,11 +75,11 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.Offloa
     public void onBindViewHolder(OffloaderViewHolder holder, int position) {
         mCursor.moveToPosition(position);
 
-        String vehicleReg = mCursor.getString(MainFragment.COL_VEHICLE_REGISTRATION);
+        vehicleReg = mCursor.getString(MainFragment.COL_VEHICLE_REGISTRATION);
         String transactionAmount = mCursor.getString(MainFragment.COL_VEHICLE_AMOUNT);
         String lastTransactionDateTime = mCursor.getString(MainFragment.COL_LAST_TRANSACTION_DATE_TIME);
 
-        Log.w(LOG_TAG, "From SQLite: "+vehicleReg+", "+transactionAmount+", "+lastTransactionDateTime);
+        Log.w(LOG_TAG, "onBindViewHolder: "+vehicleReg+", "+transactionAmount+", "+lastTransactionDateTime);
 
         holder.registrationTextView.setText(vehicleReg);
         holder.amountView.setText( transactionAmount);
@@ -87,6 +103,7 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.Offloa
         Log.w(LOG_TAG, "swapCursor: "+newCursor.getCount());
         mCursor = newCursor;
         notifyDataSetChanged();
+        mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE: View.GONE);
     }
 
     public Cursor getCursor(){

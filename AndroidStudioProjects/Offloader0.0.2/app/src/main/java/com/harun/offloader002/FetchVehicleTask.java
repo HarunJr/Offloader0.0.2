@@ -130,7 +130,7 @@ public class FetchVehicleTask extends AsyncTask<Void, Void, String> {
         db = dbHelper.getWritableDatabase();
     }
 
-    private long addToSQLitedb(String vehicleId, String vehicleReg, String regDate) {
+    private void addToSQLitedb(String vehicleId, String vehicleReg, String regDate) {
 
         open();
         ContentValues vehicleValues = new ContentValues();
@@ -162,8 +162,6 @@ public class FetchVehicleTask extends AsyncTask<Void, Void, String> {
         }
 
         close();
-
-        return vehicleRowId;
 
     }
 

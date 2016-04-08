@@ -1,7 +1,6 @@
 package com.harun.offloader002.fragments;
 
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -26,7 +25,7 @@ import com.harun.offloader002.R;
 import com.harun.offloader002.VehiclesAdapter;
 import com.harun.offloader002.data.VehicleContract;
 
-public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     public static final String LOG_TAG = MainFragment.class.getSimpleName();
     private final int VEHICLE_LOADER = 0;
 
@@ -70,8 +69,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
-
     public MainFragment() {
         // Required empty public constructor
     }
@@ -84,6 +81,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public interface Callback{
+        void onItemSelected(int vehicleId, String vehicleReg);
     }
 
     @Override
@@ -103,12 +104,24 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         Constants.toolbar = (Toolbar) rootView.findViewById(R.id.main_tool_bar);
-
-        mVehiclesAdapter = new VehiclesAdapter(getActivity());
+        View emptyView = rootView.findViewById(R.id.recyclerview_vehicle_empty);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvVehicles);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setHasFixedSize(true);
+
+        mVehiclesAdapter = new VehiclesAdapter(getActivity(), new VehiclesAdapter.VehiclesAdapterOnClickHandler() {
+            @Override
+            public void onClick(int vehicleId, String vehicleReg, VehiclesAdapter.OffloaderViewHolder vh) {
+
+                ((Callback) getActivity()).onItemSelected(vehicleId, vehicleReg);
+                Log.w(LOG_TAG, "onCreateView "+vehicleId+", "+vehicleReg);
+                mPosition = vh.getAdapterPosition();
+            }
+        }, emptyView);
+
         mRecyclerView.setAdapter(mVehiclesAdapter);
+
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)){
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
@@ -169,13 +182,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         updateVehicles();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.w(LOG_TAG, "onCreateLoader: ");
@@ -189,7 +195,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 null,
                 null
         );
-
+        //TODO: Update EmptyView
     }
 
     @Override
@@ -223,18 +229,5 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 //        mListener = null;
 //    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
+
 }

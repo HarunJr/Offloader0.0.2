@@ -1,14 +1,16 @@
 package com.harun.offloader002.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.harun.offloader002.fragments.MainFragment;
 import com.harun.offloader002.R;
+import com.harun.offloader002.fragments.DetailFragment;
+import com.harun.offloader002.fragments.MainFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainFragment.Callback{
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -27,4 +29,11 @@ public class MainActivity extends AppCompatActivity {
         Log.w(LOG_TAG, "MainFragment has been added");
     }
 
+    @Override
+    public void onItemSelected(int vehicleId, String vehicleReg) {
+        Log.w(LOG_TAG, "onItemSelected "+vehicleId+", "+vehicleReg);
+        startActivity(new Intent(getApplicationContext(), DetailsActivity.class)
+        .putExtra(DetailFragment.VEHICLE_ID, vehicleId)
+        .putExtra(DetailFragment.VEHICLE_REG, vehicleReg));
+    }
 }
