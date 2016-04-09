@@ -19,11 +19,11 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.Offloade
 
     private Cursor mCursor;
     final private Context mContext;
-    final private VehiclesAdapterOnClickHandler mClickHandler;
+    final private DetailsAdapterOnClickHandler mClickHandler;
     final private View mEmptyView;
     String vehicleReg;
 
-    public DetailsAdapter(Context context, VehiclesAdapterOnClickHandler clickHandler, View emptyView) {
+    public DetailsAdapter(Context context, DetailsAdapterOnClickHandler clickHandler, View emptyView) {
         this.mContext = context;
         this.mClickHandler = clickHandler;
         this.mEmptyView = emptyView;
@@ -31,16 +31,14 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.Offloade
     }
 
     public  class OffloaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView registrationTextView;
-        public TextView amountView;
-        public TextView dateTimeView;
+        public TextView detailsTextView;
+        public TextView dateTextView;
 
         public OffloaderViewHolder(View itemView) {
             super(itemView);
 
-            registrationTextView = (TextView) itemView.findViewById(R.id.item_vehicle_reg);
-            amountView = (TextView) itemView.findViewById(R.id.item_vehicle_amount);
-            dateTimeView = (TextView) itemView.findViewById(R.id.item_vehicle_date_time);
+            detailsTextView = (TextView) itemView.findViewById(R.id.item_details_amount);
+            dateTextView = (TextView) itemView.findViewById(R.id.item_details_date_time);
             //set listener generating onClick... Create ClickListener interface
             itemView.setOnClickListener(this);
 
@@ -59,14 +57,14 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.Offloade
         }
     }
 
-    public interface VehiclesAdapterOnClickHandler{
+    public interface DetailsAdapterOnClickHandler {
         void onClick(int vehicleId, String vehicleReg, OffloaderViewHolder vh);
     }
 
 
     @Override
     public OffloaderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_vehicle, parent, false);
+        View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_details, parent, false);
         rootView.setFocusable(true);
         return new OffloaderViewHolder(rootView);
     }
@@ -81,9 +79,8 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.Offloade
 
         Log.w(LOG_TAG, "onBindViewHolder: "+vehicleReg+", "+transactionAmount+", "+lastTransactionDateTime);
 
-        holder.registrationTextView.setText(vehicleReg);
-        holder.amountView.setText( transactionAmount);
-        holder.dateTimeView.setText( lastTransactionDateTime);
+        holder.detailsTextView.setText(vehicleReg);
+        holder.dateTextView.setText( transactionAmount);
 
     }
 

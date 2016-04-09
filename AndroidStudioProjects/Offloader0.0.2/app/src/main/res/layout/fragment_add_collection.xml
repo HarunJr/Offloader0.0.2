@@ -1,13 +1,23 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.AddCollection">
+    tools:context=".fragments.AddVehicleFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <EditText
+        android:layout_marginTop="170dp"
+        android:id="@+id/collection_input"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:hint="@string/vehicle_reg_hint"
+        android:inputType="number"
+        android:imeOptions="actionDone"/>
 
-</FrameLayout>
+    <Button
+        android:layout_below="@+id/collection_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_collection_button_label"
+        android:id="@+id/add_collection_button"/>
+
+</RelativeLayout>

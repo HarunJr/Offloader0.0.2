@@ -6,8 +6,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.harun.offloader002.Constants;
 import com.harun.offloader002.R;
-import com.harun.offloader002.fragments.DetailFragment;
 import com.harun.offloader002.fragments.MainFragment;
 
 public class MainActivity extends AppCompatActivity implements MainFragment.Callback{
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Call
     public void onItemSelected(int vehicleId, String vehicleReg) {
         Log.w(LOG_TAG, "onItemSelected "+vehicleId+", "+vehicleReg);
         startActivity(new Intent(getApplicationContext(), DetailsActivity.class)
-        .putExtra(DetailFragment.VEHICLE_ID, vehicleId)
-        .putExtra(DetailFragment.VEHICLE_REG, vehicleReg));
+        .putExtra(Constants.VEHICLE_ID, vehicleId)
+        .putExtra(Constants.VEHICLE_REG, vehicleReg));
     }
 }

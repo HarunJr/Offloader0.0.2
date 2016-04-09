@@ -7,6 +7,10 @@ import android.support.v7.widget.Toolbar;
  */
 public class Constants {
     public static Toolbar toolbar = null;
+    public static final String VEHICLE_ID = "_id";
+    public static final String VEHICLE_REG = "vehicleReg";
+
+
 
     /**
      The caller references the constants using <tt>Consts.EMPTY_STRING</tt>,

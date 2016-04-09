@@ -12,4 +12,8 @@
     <string name="vehicles_label">Vehicles</string>
     <string name="action_home">Home</string>
     <string name="create_vehicle_label">Create Vehicle</string>
+    <string name="empty_vehicle_list">Empty Vehicle List</string>
+    <string name="title_activity_detail">Details</string>
+    <string name="add_expense_button_label">Add Expense</string>
+    <string name="add_collection_button_label" >Add Collection</string>
 </resources>

@@ -100,7 +100,7 @@ public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.Offloa
     }
 
     public void swapCursor(Cursor newCursor){
-        Log.w(LOG_TAG, "swapCursor: "+newCursor.getCount());
+//        Log.w(LOG_TAG, "swapCursor: "+newCursor.getCount());
         mCursor = newCursor;
         notifyDataSetChanged();
         mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE: View.GONE);

@@ -3,11 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".Activities.Details">
+    tools:context=".activities.DetailsActivity">
 
     <FrameLayout
         android:id="@+id/addDetails_container"
@@ -15,6 +11,4 @@
         android:layout_height="match_parent"
         tools:context="com.harun.magent.MainActivity"
         tools:ignore="MergeRootFrame" />
-
-
 </RelativeLayout>
