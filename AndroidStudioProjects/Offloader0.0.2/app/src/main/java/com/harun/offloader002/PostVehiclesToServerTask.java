@@ -17,11 +17,11 @@ import java.net.URLEncoder;
 /**
  * Created by HARUN on 4/4/2016.
  */
-public class PostToServerTask extends AsyncTask<String, Void, String> {
-    public static final String LOG_TAG = PostToServerTask.class.getSimpleName();
+public class PostVehiclesToServerTask extends AsyncTask<String, Void, String> {
+    public static final String LOG_TAG = PostVehiclesToServerTask.class.getSimpleName();
     Context mContext;
 
-    public PostToServerTask(Context context) {
+    public PostVehiclesToServerTask(Context context) {
         this.mContext = context;
         Log.w(LOG_TAG, "PostToServerTask called");
 
