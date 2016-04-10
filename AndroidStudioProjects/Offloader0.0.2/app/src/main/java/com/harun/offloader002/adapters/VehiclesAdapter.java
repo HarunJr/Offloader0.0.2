@@ -1,4 +1,4 @@
-package com.harun.offloader002;
+package com.harun.offloader002.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,21 +9,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.harun.offloader002.R;
 import com.harun.offloader002.fragments.MainFragment;
 
 /**
  * Created by HARUN on 4/7/2016.
  */
-public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.OffloaderViewHolder> {
-    public static final String LOG_TAG = DetailsAdapter.class.getSimpleName();
+public class VehiclesAdapter extends RecyclerView.Adapter<VehiclesAdapter.OffloaderViewHolder> {
+    public static final String LOG_TAG = VehiclesAdapter.class.getSimpleName();
 
     private Cursor mCursor;
     final private Context mContext;
-    final private DetailsAdapterOnClickHandler mClickHandler;
+    final private VehiclesAdapterOnClickHandler mClickHandler;
     final private View mEmptyView;
     String vehicleReg;
 
-    public DetailsAdapter(Context context, DetailsAdapterOnClickHandler clickHandler, View emptyView) {
+    public VehiclesAdapter(Context context, VehiclesAdapterOnClickHandler clickHandler, View emptyView) {
         this.mContext = context;
         this.mClickHandler = clickHandler;
         this.mEmptyView = emptyView;
@@ -31,14 +32,16 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.Offloade
     }
 
     public  class OffloaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView detailsTextView;
-        public TextView dateTextView;
+        public TextView registrationTextView;
+        public TextView amountView;
+        public TextView dateTimeView;
 
         public OffloaderViewHolder(View itemView) {
             super(itemView);
 
-            detailsTextView = (TextView) itemView.findViewById(R.id.item_details_amount);
-            dateTextView = (TextView) itemView.findViewById(R.id.item_details_date_time);
+            registrationTextView = (TextView) itemView.findViewById(R.id.item_vehicle_reg);
+            amountView = (TextView) itemView.findViewById(R.id.item_vehicle_amount);
+            dateTimeView = (TextView) itemView.findViewById(R.id.item_vehicle_date_time);
             //set listener generating onClick... Create ClickListener interface
             itemView.setOnClickListener(this);
 
@@ -57,14 +60,14 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.Offloade
         }
     }
 
-    public interface DetailsAdapterOnClickHandler {
+    public interface VehiclesAdapterOnClickHandler{
         void onClick(int vehicleId, String vehicleReg, OffloaderViewHolder vh);
     }
 
 
     @Override
     public OffloaderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_details, parent, false);
+        View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_vehicle, parent, false);
         rootView.setFocusable(true);
         return new OffloaderViewHolder(rootView);
     }
@@ -79,8 +82,9 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.Offloade
 
         Log.w(LOG_TAG, "onBindViewHolder: "+vehicleReg+", "+transactionAmount+", "+lastTransactionDateTime);
 
-        holder.detailsTextView.setText(vehicleReg);
-        holder.dateTextView.setText( transactionAmount);
+        holder.registrationTextView.setText(vehicleReg);
+        holder.amountView.setText( transactionAmount);
+        holder.dateTimeView.setText( lastTransactionDateTime);
 
     }
 

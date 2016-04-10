@@ -17,11 +17,11 @@ import java.net.URLEncoder;
 /**
  * Created by HARUN on 4/4/2016.
  */
-public class PostVehiclesToServerTask extends AsyncTask<String, Void, String> {
-    public static final String LOG_TAG = PostVehiclesToServerTask.class.getSimpleName();
+public class PostToServerTask extends AsyncTask<String, Void, String> {
+    public static final String LOG_TAG = PostToServerTask.class.getSimpleName();
     Context mContext;
 
-    public PostVehiclesToServerTask(Context context) {
+    public PostToServerTask(Context context) {
         this.mContext = context;
         Log.w(LOG_TAG, "PostToServerTask called");
 
@@ -38,6 +38,7 @@ public class PostVehiclesToServerTask extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... params) {
         Log.w(LOG_TAG, "doInBackground called");
         String post_url = "http://192.168.245.1/Offloader002/input.php";/**specific to genymotion IPV4 address**/
+        String transact_url = "http://192.168.245.1/Offloader002/transact.php";/**specific to genymotion IPV4 address**/
 ///        String post_url = "http://10.0.2.2/Offloader002/input.php";/**specific to android virtual device**/
         String method = params[0];
 
@@ -68,6 +69,42 @@ public class PostVehiclesToServerTask extends AsyncTask<String, Void, String> {
                 httpURLConnection.disconnect();
 
                 return "Post Vehicle success";
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else if (method.equals("transact")){
+            Log.w(LOG_TAG, "doInBackground post");
+            String vehicleId = params[1];
+            String collection = params[2];
+            String type = params[3];
+            String description = params[4];
+            String dateTime = params[5];
+
+            try {
+                URL url = new URL(transact_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                OutputStream OS = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
+
+                String data = URLEncoder.encode("vehicle_key", "UTF-8") + "=" + URLEncoder.encode(vehicleId, "UTF-8") + "&" +
+                        URLEncoder.encode("amount", "UTF-8") + "=" + URLEncoder.encode(collection, "UTF-8") + "&" +
+                        URLEncoder.encode("type", "UTF-8") + "=" + URLEncoder.encode(type, "UTF-8") + "&" +
+                        URLEncoder.encode("description", "UTF-8") + "=" + URLEncoder.encode(description, "UTF-8") + "&" +
+                        URLEncoder.encode("date_time", "UTF-8") + "=" + URLEncoder.encode(dateTime, "UTF-8");
+
+                Log.w(LOG_TAG, "doInBackground called "+ collection +": "+dateTime);
+                bufferedWriter.write(data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                OS.close();
+
+                InputStream IS = httpURLConnection.getInputStream();
+                IS.close();
+                httpURLConnection.disconnect();
+
+                return "Post Transaction success";
             } catch (IOException e) {
                 e.printStackTrace();
             }
