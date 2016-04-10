@@ -1,7 +1,6 @@
 package com.harun.offloader002.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,9 +11,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.harun.offloader002.PostTransactionsToServer;
+import com.harun.offloader002.PostToServerTask;
 import com.harun.offloader002.R;
-import com.harun.offloader002.activities.DetailsActivity;
 
 
 /**
@@ -92,10 +90,8 @@ public class AddExpense extends Fragment {
                 String dateTime = String.valueOf(System.currentTimeMillis());
                 Log.w(LOG_TAG, "create button clicked "+collection +": "+dateTime);
 
-                PostTransactionsToServer postToServerTask = new PostTransactionsToServer(getContext());
+                PostToServerTask postToServerTask = new PostToServerTask(getContext());
                 postToServerTask.execute(method, stringVehicleId, collection, stringType, description,  dateTime);
-
-                startActivity(new Intent(getContext(), DetailsActivity.class));
 
                 ((OnSendExpenseListener) getActivity()).onExpenseButtonClicked(vehicleId, vehicleReg);
 

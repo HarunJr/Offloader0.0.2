@@ -18,14 +18,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.harun.offloader002.Constants;
 import com.harun.offloader002.FetchVehicleTask;
 import com.harun.offloader002.R;
-import com.harun.offloader002.VehiclesAdapter;
+import com.harun.offloader002.adapters.VehiclesAdapter;
 import com.harun.offloader002.data.VehicleContract;
 
-public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = MainFragment.class.getSimpleName();
     private final int VEHICLE_LOADER = 0;
 
@@ -33,6 +34,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private FetchVehicleTask mFetchVehicleTask;
 
     private RecyclerView mRecyclerView;
+    ListView mListView;
     private int mPosition = RecyclerView.NO_POSITION;
     private static final String SELECTED_KEY = "selected_position";
 
@@ -83,7 +85,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         return fragment;
     }
 
-    public interface Callback{
+    public interface Callback {
         void onItemSelected(int vehicleId, String vehicleReg);
     }
 
@@ -106,28 +108,56 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         Constants.toolbar = (Toolbar) rootView.findViewById(R.id.main_tool_bar);
         View emptyView = rootView.findViewById(R.id.recyclerview_vehicle_empty);
 
+//        mVehiclesAdapter = new VehiclesAdapter(mClickHandler, getActivity());
+//        ListView listView = (ListView) rootView.findViewById(R.id.listview_vehicles);
+//        listView.setAdapter(mVehiclesAdapter);
+
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvVehicles);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
 
         mVehiclesAdapter = new VehiclesAdapter(getActivity(), new VehiclesAdapter.VehiclesAdapterOnClickHandler() {
             @Override
-            public void onClick(int vehicleId, String vehicleReg, VehiclesAdapter.OffloaderViewHolder vh) {
-
+            public void onClick(int vehicleId, String vehicleReg, VehiclesAdapter.ViewHolder vh) {
                 ((Callback) getActivity()).onItemSelected(vehicleId, vehicleReg);
-                Log.w(LOG_TAG, "onCreateView "+vehicleId+", "+vehicleReg);
+
+                Log.w(LOG_TAG, "onCreateView " + vehicleId + ", " + vehicleReg);
                 mPosition = vh.getAdapterPosition();
+
             }
         }, emptyView);
+
 
         mRecyclerView.setAdapter(mVehiclesAdapter);
 
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)){
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.main_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_refresh) {
+            updateVehicles();
+            return true;
+        } else if (id == R.id.action_add_vehicle) {
+            addVehicle();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -144,43 +174,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         Log.w(LOG_TAG, "Toolbar has been added");
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        inflater.inflate(R.menu.main_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_add_vehicle) {
-            addVehicle();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void addVehicle() {
-        AddVehicleFragment addVehicleFragment = new AddVehicleFragment();
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.main_container, addVehicleFragment);
-        fragmentTransaction.commit();
-    }
-
-    private void updateVehicles() {
-
-        FetchVehicleTask vehicleTask = new FetchVehicleTask(getContext());
-        vehicleTask.execute();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateVehicles();
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -195,15 +188,20 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 null,
                 null
         );
-        //TODO: Update EmptyView
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.w(LOG_TAG, "onLoadFinished: "+data.getCount());
+        Log.w(LOG_TAG, "onLoadFinished: " + data.getCount());
 
         mVehiclesAdapter.swapCursor(data);
 
+        if (mPosition != RecyclerView.NO_POSITION) {
+            // If we don't need to restart the loader, and there's a desired position to restore
+            // to, do so now.
+            mRecyclerView.smoothScrollToPosition(mPosition);
+        }
+        //TODO: Update EmptyView
     }
 
     @Override
@@ -212,6 +210,18 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         mVehiclesAdapter.swapCursor(null);
     }
 
+    private void addVehicle() {
+        AddVehicleFragment addVehicleFragment = new AddVehicleFragment();
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_container, addVehicleFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void updateVehicles() {
+
+        FetchVehicleTask vehicleTask = new FetchVehicleTask(getContext());
+        vehicleTask.execute();
+    }
     //    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
@@ -229,5 +239,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 //        mListener = null;
 //    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateVehicles();
+    }
 
 }

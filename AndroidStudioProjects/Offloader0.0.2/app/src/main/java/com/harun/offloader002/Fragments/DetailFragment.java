@@ -1,10 +1,14 @@
 package com.harun.offloader002.fragments;
 
-import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,21 +17,35 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.harun.offloader002.Constants;
+import com.harun.offloader002.FetchTransactionTask;
 import com.harun.offloader002.R;
+import com.harun.offloader002.adapters.DetailsAdapter;
+import com.harun.offloader002.data.VehicleContract;
 
-
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = DetailFragment.class.getSimpleName();
+    private final int TRANSACTION_LOADER = 0;
 
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private DetailsAdapter mDetailsAdapter;
 
     private int vehicleId;
     private String vehicleReg;
 
-    private OnFabPressedListener mListener;
+    private static final String[] TRANSACTION_COLUMNS = {
+            VehicleContract.TransactionEntry.TABLE_NAME + "." + VehicleContract.TransactionEntry.COLUMN_TRANSACTION_ID,
+            VehicleContract.TransactionEntry.COLUMN_AMOUNT,
+            VehicleContract.TransactionEntry.COLUMN_TYPE,
+            VehicleContract.TransactionEntry.COLUMN_DESCRIPTION,
+            VehicleContract.TransactionEntry.COLUMN_DATE_TIME,
+    };
+
+    public static final int COL_TRANSACTION_ID = 0;
+    public static final int COL_AMOUNT = 1;
+    public static final int COL_TYPE = 2;
+    public static final int COL_DESCRIPTION = 3;
+    public static final int COL_DATE_TIME = 4;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -35,7 +53,7 @@ public class DetailFragment extends Fragment {
 
     public static DetailFragment newInstance(Bundle args) {
         DetailFragment fragment = new DetailFragment();
-        if (args!= null){
+        if (args != null) {
             fragment.setArguments(args);
         }
         return fragment;
@@ -47,7 +65,7 @@ public class DetailFragment extends Fragment {
         if (getArguments() != null) {
             vehicleId = getArguments().getInt(Constants.VEHICLE_ID, 0);
             vehicleReg = getArguments().getString(Constants.VEHICLE_REG);
-            Log.w(LOG_TAG, "onCreate "+vehicleId+", "+vehicleReg);
+            Log.w(LOG_TAG, "onCreate " + vehicleId + ", " + vehicleReg);
         }
         setHasOptionsMenu(true);
     }
@@ -63,15 +81,20 @@ public class DetailFragment extends Fragment {
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvDetails);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
+        View emptyView = rootView.findViewById(R.id.recyclerview_details_empty);
+
+        mDetailsAdapter = new DetailsAdapter(getActivity(), emptyView);
+
+        mRecyclerView.setAdapter(mDetailsAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fabButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Hi there", Toast.LENGTH_LONG).show();
+
                 ((OnFabPressedListener) getActivity()).onFabPressed(vehicleId, vehicleReg);
 
-       //         addTransactionFragment(vehicleId, vehicleReg);
+                //         addTransactionFragment(vehicleId, vehicleReg);
             }
         });
 
@@ -80,6 +103,7 @@ public class DetailFragment extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getLoaderManager().initLoader(TRANSACTION_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
 
         AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
@@ -92,7 +116,19 @@ public class DetailFragment extends Fragment {
         appCompatActivity.getSupportActionBar().setTitle(vehicleReg);
     }
 
-//    @Override
+    private void updateTransactions() {
+
+        FetchTransactionTask transactionTask = new FetchTransactionTask(getContext());
+        transactionTask.execute();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateTransactions();
+    }
+
+    //    @Override
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        super.onCreateOptionsMenu(menu, inflater);
 //    }
@@ -107,22 +143,32 @@ public class DetailFragment extends Fragment {
 //        return super.onOptionsItemSelected(item);
 //    }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        Uri transactionForVehicleIdUri = VehicleContract.TransactionEntry.buildVehicleTransactionUri(vehicleId);
+
+        return new CursorLoader(
+                getActivity(),
+                transactionForVehicleIdUri,
+                TRANSACTION_COLUMNS,
+                null,
+                null,
+                null
+        );
+    }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFabPressedListener) {
-            mListener = (OnFabPressedListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null && data.moveToFirst()) {
+            mDetailsAdapter.swapCursor(data);
+            Log.w(LOG_TAG, "onLoadFinished: " + data.getCount());
         }
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 
     /**

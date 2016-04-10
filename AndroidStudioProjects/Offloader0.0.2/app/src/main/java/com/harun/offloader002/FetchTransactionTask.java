@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Vector;
 
 /**
  * Created by HARUN on 4/5/2016.
@@ -67,7 +66,7 @@ public class FetchTransactionTask extends AsyncTask<Void, Void, String> {
 
             vehicleJsonString = stringBuilder.toString().trim();
             Log.w(LOG_TAG, "JSON String: " + vehicleJsonString);
-            getVehicleDataFromJson(vehicleJsonString);
+            getTransactionDataFromJson(vehicleJsonString);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -88,38 +87,49 @@ public class FetchTransactionTask extends AsyncTask<Void, Void, String> {
         return null;
     }
 
-    private void getVehicleDataFromJson(String vehicleJsonString) throws JSONException {
+    private void getTransactionDataFromJson(String vehicleJsonString) throws JSONException {
 
         //Vehicle information. Each vehicle's detail is an element of "list" array.
         final String VEHICLE_LIST = "list";
+        final String TRANACTION_LIST = "transaction_list";
 
         //Vehicle details referenced from JSON
-        final String VEHICLE_ID = "id";
-        final String VEHICLE_REG = "registration";
-        final String VEHICLE_REG_DATE = "sign_up_date";
-        final String VEHICLE_TOTAL_AMOUNT = "vehicle_total";
-        final String VEHICLE_LAST_TRANSACTION = "last_transaction";
+        final String TRANSACTION_ID = "id";
+        final String VEHICLE_KEY = "vehicle_key";
+        final String TRANSACTION_AMOUNT = "amount";
+        final String TYPE = "type";
+        final String DESCRIPTION = "description";
+        final String TRANSACTION_DATE_TIME = "date_time";
 
         try {
             JSONObject vehicleJson = new JSONObject(vehicleJsonString);
             JSONArray vehicleArray = vehicleJson.getJSONArray(VEHICLE_LIST);
 
-            Vector<ContentValues> cVVector = new Vector<ContentValues>(vehicleArray.length());
+      //      Vector<ContentValues> cVVector = new Vector<ContentValues>(transactionArray.length());
 
             for (int i = 0; i < vehicleArray.length(); i++) {
-                String vehicleId, vehicleReg, regDate, vehicleAmount, vehicleLastTransaction;
 
                 JSONObject vehicleObject = vehicleArray.getJSONObject(i);
+                JSONArray transactionArray = vehicleObject.getJSONArray(TRANACTION_LIST);
 
-                vehicleId = vehicleObject.getString(VEHICLE_ID);
-                vehicleReg = vehicleObject.getString(VEHICLE_REG);
-                regDate = vehicleObject.getString(VEHICLE_REG_DATE);
-                vehicleAmount = vehicleObject.getString(VEHICLE_TOTAL_AMOUNT);
-                vehicleLastTransaction = vehicleObject.getString(VEHICLE_LAST_TRANSACTION);
+                Log.w(LOG_TAG, "JSON String: " + vehicleArray);
+                for (int j = 0; j <transactionArray.length(); j++){
+                    String transactionId, vehicleKey, amount, type, description, dateTime;
 
-                Log.w(LOG_TAG, "From db: " + vehicleId + ", " + vehicleReg + ", " + regDate + ", " + vehicleAmount + ", " + vehicleLastTransaction);
+                    JSONObject transactionObject = transactionArray.getJSONObject(j);
 
-                addToSQLitedb(vehicleId, vehicleReg, regDate, vehicleAmount, vehicleLastTransaction);
+                    transactionId = transactionObject.getString(TRANSACTION_ID);
+                    vehicleKey = transactionObject.getString(VEHICLE_KEY);
+                    amount = transactionObject.getString(TRANSACTION_AMOUNT);
+                    type = transactionObject.getString(TYPE);
+                    description = transactionObject.getString(DESCRIPTION);
+                    dateTime = transactionObject.getString(TRANSACTION_DATE_TIME);
+
+                    Log.w(LOG_TAG, "From db: " + transactionId + ", " + vehicleKey+", "+ amount + ", " + type + ", " + description + ", " + dateTime);
+
+                    addToTransactionSQLitedb(transactionId, vehicleKey, amount, type, description, dateTime);
+
+                }
 
             }
 
@@ -134,16 +144,17 @@ public class FetchTransactionTask extends AsyncTask<Void, Void, String> {
         db = dbHelper.getWritableDatabase();
     }
 
-    private void addToSQLitedb( String vehicleId, String vehicleReg, String regDate, String vehicleAmount, String vehicleLastTransaction) {
+    private void addToTransactionSQLitedb(String transactionId, String vehicleKey, String amount, String type, String description, String dateTime) {
 
         open();
-        ContentValues vehicleValues = new ContentValues();
+        ContentValues transactionValues = new ContentValues();
 
-        vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_VEHICLE_ID, vehicleId);
-        vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_VEHICLE_REGISTRATION, vehicleReg);
-        vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_VEHICLE_REGISTRATION_DATE, regDate);
-        vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_VEHICLE_AMOUNT, vehicleAmount);
-        vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_LAST_TRANSACTION_DATE_TIME, vehicleLastTransaction);
+        transactionValues.put(VehicleContract.TransactionEntry.COLUMN_TRANSACTION_ID, transactionId);
+        transactionValues.put(VehicleContract.TransactionEntry.COLUMN_VEHICLE_KEY, vehicleKey);
+        transactionValues.put(VehicleContract.TransactionEntry.COLUMN_AMOUNT, amount);
+        transactionValues.put(VehicleContract.TransactionEntry.COLUMN_TYPE, type);
+        transactionValues.put(VehicleContract.TransactionEntry.COLUMN_DESCRIPTION, description);
+        transactionValues.put(VehicleContract.TransactionEntry.COLUMN_DATE_TIME, dateTime);
 
         //USE THIS for normal entries
 //        long vehicleRowId=db.insert(VehicleContract.VehicleEntry.TABLE_NAME,null, vehicleValues);
@@ -151,12 +162,12 @@ public class FetchTransactionTask extends AsyncTask<Void, Void, String> {
         //Use this for insert with conflict replace.
 //        long vehicleRowId = db.insertWithOnConflict(VehicleContract.VehicleEntry.TABLE_NAME, null, vehicleValues, SQLiteDatabase.CONFLICT_REPLACE);
 
-        Uri vehicleUri = mContext.getContentResolver().insert(VehicleContract.VehicleEntry.CONTENT_URI, vehicleValues);
+        Uri transactionUri = mContext.getContentResolver().insert(VehicleContract.TransactionEntry.CONTENT_URI, transactionValues);
 
-        long vehicleRowId = ContentUris.parseId(vehicleUri);
+        long transactionRowId = ContentUris.parseId(transactionUri);
 
-        if (vehicleRowId > 0) {
-            Log.w(LOG_TAG, "Inserted into SQLitedb: " + vehicleId + ", " + vehicleReg + ", " + regDate);
+        if (transactionRowId > 0) {
+            Log.w(LOG_TAG, "Inserted into SQLitedb: " + transactionId + ", " + vehicleKey + ", " + amount+ ", " + type+ ", " + description+ ", " + dateTime);
 
         } else {
             Log.w(LOG_TAG, ">>>>ERROR Inserting into SQLitedb: ");

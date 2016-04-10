@@ -96,7 +96,7 @@ public class OffloaderProvider extends ContentProvider {
 
     private static final String sTransactionWithTransactionId =
             TransactionEntry.TABLE_NAME +
-                    "." + TransactionEntry._ID + " = ? ";
+                    "." + TransactionEntry.COLUMN_TRANSACTION_ID + " = ? ";
 
     private static final String sTransactionWithStartDateSelection =
             TransactionEntry.TABLE_NAME +
@@ -116,7 +116,7 @@ public class OffloaderProvider extends ContentProvider {
             TransactionEntry.TABLE_NAME +
                     "."
                     + TransactionEntry.COLUMN_VEHICLE_KEY + " = ? AND "
-                    + TransactionEntry.TABLE_NAME + "." + TransactionEntry._ID + " = ? ";
+                    + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TRANSACTION_ID + " = ? ";
 
     //location.location_setting = ? AND date >= ?
     private static final String sVehicleRegistrationWithStartDateSelection =
@@ -205,14 +205,15 @@ public class OffloaderProvider extends ContentProvider {
 
     private Cursor getVehicles(String[] projection) {
         Log.d(LOG_TAG, "ALL_VEHICLES_CODE");
-        return sVehicleWithTransactionQueryBuilder.query(
-                mOpenHelper.getReadableDatabase(),
+        return mOpenHelper.getReadableDatabase().query(
+                VehicleEntry.TABLE_NAME,
                 projection,
                 null,
                 null,
                 null,
                 null,
                 null
+
         );
 
     }
@@ -461,7 +462,7 @@ public class OffloaderProvider extends ContentProvider {
 
         switch (match) {
             case TRANSACTIONS: {
-                long _id = db.insert(TransactionEntry.TABLE_NAME, null, values);
+                long _id = db.insertWithOnConflict(TransactionEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 if (_id > 0)
                     returnUri = TransactionEntry.buildTransactionUri(_id);
                 else

@@ -35,6 +35,7 @@ public class DetailsActivity extends AppCompatActivity
     private void addDetailsFragment(int vehicleId, String vehicleReg){
         args.putInt(Constants.VEHICLE_ID, vehicleId);
         args.putString(Constants.VEHICLE_REG, vehicleReg);
+        Log.w(LOG_TAG, "addDetailsFragment "+vehicleId+", "+vehicleReg);
 
         DetailFragment detailFragment = new DetailFragment();
         detailFragment.setArguments(args);
@@ -58,9 +59,9 @@ public class DetailsActivity extends AppCompatActivity
 
     private void replaceWithDetailFragment(int vehicleId, String vehicleReg){
         args.putInt(Constants.VEHICLE_ID, vehicleId);
-//        args.putString(Constants.VEHICLE_REG, vehicleReg);
+        args.putString(Constants.VEHICLE_REG, vehicleReg);
 
-        Log.w(LOG_TAG, "replaceWithDetailFragment "+vehicleId+", "+vehicleReg);
+        Log.w(LOG_TAG, "replaceWithDetailFragment "+vehicleId);
         DetailFragment detailFragment = new DetailFragment();
         detailFragment.setArguments(args);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

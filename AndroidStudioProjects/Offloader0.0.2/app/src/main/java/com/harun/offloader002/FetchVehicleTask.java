@@ -97,6 +97,8 @@ public class FetchVehicleTask extends AsyncTask<Void, Void, String> {
         final String VEHICLE_ID = "id";
         final String VEHICLE_REG = "registration";
         final String VEHICLE_REG_DATE = "sign_up_date";
+        final String VEHICLE_TOTAL_AMOUNT = "vehicle_total";
+        final String VEHICLE_LAST_TRANSACTION = "last_transaction";
 
         try {
             JSONObject vehicleJson = new JSONObject(vehicleJsonString);
@@ -105,17 +107,19 @@ public class FetchVehicleTask extends AsyncTask<Void, Void, String> {
             Vector<ContentValues> cVVector = new Vector<ContentValues>(vehicleArray.length());
 
             for (int i = 0; i < vehicleArray.length(); i++) {
-                String vehicleId, vehicleReg, regDate;
+                String vehicleId, vehicleReg, regDate, vehicleAmount, vehicleLastTransaction;
 
                 JSONObject vehicleObject = vehicleArray.getJSONObject(i);
 
                 vehicleId = vehicleObject.getString(VEHICLE_ID);
                 vehicleReg = vehicleObject.getString(VEHICLE_REG);
                 regDate = vehicleObject.getString(VEHICLE_REG_DATE);
+                vehicleAmount = vehicleObject.getString(VEHICLE_TOTAL_AMOUNT);
+                vehicleLastTransaction = vehicleObject.getString(VEHICLE_LAST_TRANSACTION);
 
-                Log.w(LOG_TAG, "From db: " + vehicleId + ", " + vehicleReg + ", " + regDate);
+                Log.w(LOG_TAG, "From db: " + vehicleId + ", " + vehicleReg + ", " + regDate + ", " + vehicleAmount + ", " + vehicleLastTransaction);
 
-                addToSQLitedb(vehicleId, vehicleReg, regDate);
+                addToVehiclesSQLitedb(vehicleId, vehicleReg, regDate, vehicleAmount, vehicleLastTransaction);
 
             }
 
@@ -130,7 +134,7 @@ public class FetchVehicleTask extends AsyncTask<Void, Void, String> {
         db = dbHelper.getWritableDatabase();
     }
 
-    private void addToSQLitedb(String vehicleId, String vehicleReg, String regDate) {
+    private void addToVehiclesSQLitedb(String vehicleId, String vehicleReg, String regDate, String vehicleAmount, String vehicleLastTransaction) {
 
         open();
         ContentValues vehicleValues = new ContentValues();
@@ -138,10 +142,8 @@ public class FetchVehicleTask extends AsyncTask<Void, Void, String> {
         vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_VEHICLE_ID, vehicleId);
         vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_VEHICLE_REGISTRATION, vehicleReg);
         vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_VEHICLE_REGISTRATION_DATE, regDate);
-
-        //TODO: Insert actual transaction values in vehicle table
-        vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_VEHICLE_AMOUNT, "1500");
-        vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_LAST_TRANSACTION_DATE_TIME, regDate);
+        vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_VEHICLE_AMOUNT, vehicleAmount);
+        vehicleValues.put(VehicleContract.VehicleEntry.COLUMN_LAST_TRANSACTION_DATE_TIME, vehicleLastTransaction);
 
         //USE THIS for normal entries
 //        long vehicleRowId=db.insert(VehicleContract.VehicleEntry.TABLE_NAME,null, vehicleValues);
