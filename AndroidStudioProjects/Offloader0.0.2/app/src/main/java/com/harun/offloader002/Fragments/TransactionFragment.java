@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.harun.offloader002.Constants;
 import com.harun.offloader002.R;
-import com.harun.offloader002.SmartTransactionFragmentStatePagerAdapter;
+import com.harun.offloader002.adapters.SmartTransactionFragmentStatePagerAdapter;
 
 public class TransactionFragment extends Fragment {
     public static final String LOG_TAG = TransactionFragment.class.getSimpleName();

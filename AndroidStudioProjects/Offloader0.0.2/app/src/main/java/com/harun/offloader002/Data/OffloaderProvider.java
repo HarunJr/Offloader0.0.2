@@ -203,7 +203,7 @@ public class OffloaderProvider extends ContentProvider {
 
     }
 
-    private Cursor getVehicles(String[] projection) {
+    private Cursor getVehicles(String[] projection, String sortOrder) {
         Log.d(LOG_TAG, "ALL_VEHICLES_CODE");
         return mOpenHelper.getReadableDatabase().query(
                 VehicleEntry.TABLE_NAME,
@@ -212,7 +212,7 @@ public class OffloaderProvider extends ContentProvider {
                 null,
                 null,
                 null,
-                null
+                sortOrder
 
         );
 
@@ -238,6 +238,7 @@ public class OffloaderProvider extends ContentProvider {
 
     //Retrieve all Transaction items from the database
     private Cursor getTransactions(String[] projection) {
+
         return sTransactionByVehicleQueryBuilder.query(
                 mOpenHelper.getReadableDatabase(),
                 projection,
@@ -331,21 +332,6 @@ public class OffloaderProvider extends ContentProvider {
         );
     }
 
-    private Cursor getTransactionByVehicleIdAndDate(Uri uri, String[] projection, String sortOrder) {
-        String vehicleId = TransactionEntry.getVehicleIdFromUri(uri);
-        String date = TransactionEntry.getDateFromUri(uri);
-
-        return sTransactionByVehicleQueryBuilder.query(
-                mOpenHelper.getReadableDatabase(),
-                projection,
-                sVehicleRegistrationAndDaySelection,
-                new String[]{vehicleId, date},
-                null,
-                null,
-                sortOrder
-        );
-    }
-
     private Cursor getTransactionsByVehicleIdAndStartDate(Uri uri, String[] projection, String sortOrder) {
         String startDate = TransactionEntry.getStartDateFromUri(uri);
         String vehicleId = TransactionEntry.getVehicleIdFromUri(uri);
@@ -419,7 +405,7 @@ public class OffloaderProvider extends ContentProvider {
             }
 
             case VEHICLES: {
-                retCursor = getVehicles(projection);
+                retCursor = getVehicles(projection, sortOrder);
                 break;
             }
 

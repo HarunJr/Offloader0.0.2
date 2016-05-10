@@ -21,10 +21,12 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.harun.offloader002.Constants;
-import com.harun.offloader002.FetchVehicleTask;
+import com.harun.offloader002.DividerItemDecoration;
+import com.harun.offloader002.tasks.FetchVehicleTask;
 import com.harun.offloader002.R;
 import com.harun.offloader002.adapters.VehiclesAdapter;
 import com.harun.offloader002.data.VehicleContract;
+import com.harun.offloader002.sync.OffloaderSyncAdapter;
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = MainFragment.class.getSimpleName();
@@ -128,9 +130,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         }, emptyView);
 
-
         mRecyclerView.setAdapter(mVehiclesAdapter);
 
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
+        mRecyclerView.addItemDecoration(itemDecoration);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
@@ -178,7 +181,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.w(LOG_TAG, "onCreateLoader: ");
-        String sortOrder = VehicleContract.VehicleEntry.COLUMN_LAST_TRANSACTION_DATE_TIME + "DESC";
+        String sortOrder = VehicleContract.VehicleEntry.COLUMN_LAST_TRANSACTION_DATE_TIME + " DESC";
 
         return new CursorLoader(
                 getActivity(),
@@ -186,7 +189,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 VEHICLE_COLUMN,
                 null,
                 null,
-                null
+                sortOrder
         );
     }
 
@@ -219,9 +222,15 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private void updateVehicles() {
 
-        FetchVehicleTask vehicleTask = new FetchVehicleTask(getContext());
-        vehicleTask.execute();
+//        FetchVehicleTask vehicleTask = new FetchVehicleTask(getContext());
+//        vehicleTask.execute();
+
+//        Intent intent = new Intent(getActivity(), OffloaderService.class);
+//        getActivity().startService(intent);
+        OffloaderSyncAdapter.syncImmediately(getContext());
+        Log.w(LOG_TAG, "updateVehicles: ");
     }
+
     //    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);

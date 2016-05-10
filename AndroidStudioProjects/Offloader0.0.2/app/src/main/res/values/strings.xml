@@ -15,6 +15,15 @@
     <string name="empty_vehicle_list">Empty Vehicle List</string>
     <string name="title_activity_detail">Details</string>
     <string name="add_expense_button_label">Add Expense</string>
-    <string name="add_collection_button_label" >Add Collection</string>
+    <string name="add_collection_button_label">Add Collection</string>
     <string name="refresh">Refresh</string>
+    <string name="vehicle_hint_label">KBG 788E</string>
+
+    <string name="sync_account_type">offloader002.harun.com</string>
+    <string name="content_authority">com.harun.offloader002</string>
+    <string name="welcome_label">Welcome</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
+    <string name="login_button">Login</string>
+
 </resources>

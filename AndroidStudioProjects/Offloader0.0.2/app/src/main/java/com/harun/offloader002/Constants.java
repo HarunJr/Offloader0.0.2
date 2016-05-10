@@ -1,5 +1,6 @@
 package com.harun.offloader002;
 
+import android.content.Context;
 import android.support.v7.widget.Toolbar;
 
 /**
@@ -9,8 +10,6 @@ public class Constants {
     public static Toolbar toolbar = null;
     public static final String VEHICLE_ID = "_id";
     public static final String VEHICLE_REG = "vehicleReg";
-
-
 
     /**
      The caller references the constants using <tt>Consts.EMPTY_STRING</tt>,
@@ -23,4 +22,7 @@ public class Constants {
         throw new AssertionError();
     }
 
+    public static String getFormattedDateString(Context context, long dateInMillis){
+        return null;
+    }
 }

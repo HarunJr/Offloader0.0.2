@@ -141,9 +141,9 @@ public class VehicleContract {
         /*
             Create URI with vehicle Reg appeded at end of URi
          */
-        public static Uri buildVehicleTransactionUri(int vehicleRegistration)
+        public static Uri buildVehicleTransactionUri(int vehicleId)
         {
-            return CONTENT_URI.buildUpon().appendPath(Integer.toString(vehicleRegistration)).build();
+            return CONTENT_URI.buildUpon().appendPath(Integer.toString(vehicleId)).build();
         }
 
         public static Uri buildVehicleTransactionWithStartDate(String vehicleRegistration, long startDate)

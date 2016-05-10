@@ -11,7 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.harun.offloader002.PostToServerTask;
+import com.harun.offloader002.tasks.PostToServerTask;
 import com.harun.offloader002.R;
 
 

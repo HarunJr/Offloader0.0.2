@@ -17,7 +17,7 @@ import android.widget.EditText;
 
 import com.harun.offloader002.activities.MainActivity;
 import com.harun.offloader002.Constants;
-import com.harun.offloader002.PostToServerTask;
+import com.harun.offloader002.tasks.PostToServerTask;
 import com.harun.offloader002.R;
 
 public class AddVehicleFragment extends Fragment {

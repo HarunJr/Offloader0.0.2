@@ -10,8 +10,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,16 +17,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.harun.offloader002.Constants;
-import com.harun.offloader002.FetchTransactionTask;
 import com.harun.offloader002.R;
-import com.harun.offloader002.adapters.DetailsAdapter;
+import com.harun.offloader002.adapters.DetailsCursorAdapter;
 import com.harun.offloader002.data.VehicleContract;
+import com.harun.offloader002.tasks.FetchTransactionTask;
+
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = DetailFragment.class.getSimpleName();
     private final int TRANSACTION_LOADER = 0;
 
-    private DetailsAdapter mDetailsAdapter;
+//    private DetailsAdapter mDetailsAdapter;
+    private DetailsCursorAdapter mDetailsCursorAdapter;
 
     private int vehicleId;
     private String vehicleReg;
@@ -77,15 +78,25 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         Constants.toolbar = (Toolbar) rootView.findViewById(R.id.details_tool_bar);
 
-        RecyclerView mRecyclerView;
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvDetails);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerView.setHasFixedSize(true);
-        View emptyView = rootView.findViewById(R.id.recyclerview_details_empty);
+//        RecyclerView mRecyclerView;
+//        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rvDetails);
+//        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        mRecyclerView.setHasFixedSize(true);
+//        View emptyView = rootView.findViewById(R.id.recyclerview_details_empty);
 
-        mDetailsAdapter = new DetailsAdapter(getActivity(), emptyView);
+//        mDetailsAdapter = new DetailsAdapter(getActivity(), emptyView);
+//
+//        mRecyclerView.setAdapter(mDetailsAdapter);
+//        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
+//        mRecyclerView.addItemDecoration(itemDecoration);
 
-        mRecyclerView.setAdapter(mDetailsAdapter);
+        mDetailsCursorAdapter = new DetailsCursorAdapter(getActivity(), null, 0);
+
+//        ListView listView = (ListView) rootView.findViewById(R.id.listview_details);
+//        listView.setAdapter(mDetailsCursorAdapter);
+
+        StickyListHeadersListView stickyListHeadersListView = (StickyListHeadersListView) rootView.findViewById(R.id.listview_details);
+        stickyListHeadersListView.setAdapter(mDetailsCursorAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fabButton);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +158,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         Uri transactionForVehicleIdUri = VehicleContract.TransactionEntry.buildVehicleTransactionUri(vehicleId);
+        String sortOrder = VehicleContract.TransactionEntry.COLUMN_DATE_TIME + " DESC";
 
         return new CursorLoader(
                 getActivity(),
@@ -154,14 +166,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 TRANSACTION_COLUMNS,
                 null,
                 null,
-                null
+                sortOrder
         );
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
-            mDetailsAdapter.swapCursor(data);
+        //    mDetailsAdapter.swapCursor(data);
+            mDetailsCursorAdapter.swapCursor(data);
             Log.w(LOG_TAG, "onLoadFinished: " + data.getCount());
         }
     }
