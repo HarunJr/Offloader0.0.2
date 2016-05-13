@@ -1,6 +1,5 @@
 package com.harun.offloader002;
 
-import android.content.Context;
 import android.support.v7.widget.Toolbar;
 
 /**
@@ -20,9 +19,5 @@ public class Constants {
         //this prevents even the native class from
         //calling this ctor as well :
         throw new AssertionError();
-    }
-
-    public static String getFormattedDateString(Context context, long dateInMillis){
-        return null;
     }
 }
