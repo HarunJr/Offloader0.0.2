@@ -16,12 +16,6 @@
             layout="@layout/tool_bar" />
     </android.support.design.widget.AppBarLayout>
 
-    <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/rvDetails"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_marginTop="55dp"/>-->
-
     <se.emilsjolander.stickylistheaders.StickyListHeadersListView
         android:id="@+id/listview_details"
         android:layout_width="match_parent"

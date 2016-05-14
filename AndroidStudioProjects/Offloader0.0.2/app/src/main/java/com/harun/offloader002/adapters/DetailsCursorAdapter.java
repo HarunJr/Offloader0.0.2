@@ -83,10 +83,12 @@ public class DetailsCursorAdapter extends CursorAdapter implements StickyListHea
     public static class ViewHolder {
         public TextView amountTextView;
         public TextView dateTextView;
+        public TextView descriptionTextView;
 
         public ViewHolder(View itemView) {
             amountTextView = (TextView) itemView.findViewById(R.id.item_details_amount);
             dateTextView = (TextView) itemView.findViewById(R.id.item_details_date_time);
+            descriptionTextView = (TextView) itemView.findViewById(R.id.item_details_description);
         }
     }
 
@@ -121,13 +123,21 @@ public class DetailsCursorAdapter extends CursorAdapter implements StickyListHea
 
         ViewHolder viewHolder = (ViewHolder) view.getTag();
         String transactionAmount = cursor.getString(DetailFragment.COL_AMOUNT);
+        String description = cursor.getString(DetailFragment.COL_DESCRIPTION);
+        int type = cursor.getInt(DetailFragment.COL_TYPE);
         long dateTime = cursor.getLong(DetailFragment.COL_DATE_TIME);
         String formattedDateTime = DateHelper.getFormattedTimeString(dateTime);
-        String description = cursor.getString(DetailFragment.COL_DATE_TIME);
         Log.w(LOG_TAG, "bindView: " + transactionAmount);
 
-        viewHolder.amountTextView.setText(transactionAmount);
-        viewHolder.dateTextView.setText(formattedDateTime);
+        if (type == 1){
+            viewHolder.amountTextView.setText(transactionAmount);
+            viewHolder.dateTextView.setText(formattedDateTime);
+            viewHolder.descriptionTextView.setText(description);
+
+        }else {
+            viewHolder.amountTextView.setText(transactionAmount);
+            viewHolder.dateTextView.setText(formattedDateTime);
+        }
     }
 
     private boolean isANewGroup(Cursor cursor, int position) {
